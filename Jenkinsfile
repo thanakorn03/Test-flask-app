@@ -117,7 +117,7 @@ pipeline {
                 }
             }
             post {
-                
+                echo  "Deployment completed."
             }
         }
 
@@ -145,7 +145,7 @@ pipeline {
                 }
             }
             post {
-                
+                echo  "Rollback completed."
             }
         }
     }
