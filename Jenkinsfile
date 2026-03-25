@@ -118,7 +118,7 @@ pipeline {
             }
             post {
                 success {
-                    sendNotificationToN8n('success', 'Deploy to PRODUCTION (Local Docker)', env.IMAGE_TAG, env.PROD_APP_NAME, env.PROD_HOST_PORT)
+                    //sendNotificationToN8n('success', 'Deploy to PRODUCTION (Local Docker)', env.IMAGE_TAG, env.PROD_APP_NAME, env.PROD_HOST_PORT)
                 }
             }
         }
@@ -148,7 +148,7 @@ pipeline {
             }
             post {
                 success {
-                    sendNotificationToN8n('success', "Rollback ${params.ROLLBACK_TARGET.toUpperCase()}", params.ROLLBACK_TAG, env.TARGET_APP_NAME, env.TARGET_HOST_PORT)
+                    //ssendNotificationToN8n('success', "Rollback ${params.ROLLBACK_TARGET.toUpperCase()}", params.ROLLBACK_TAG, env.TARGET_APP_NAME, env.TARGET_HOST_PORT)
                 }
             }
         }
