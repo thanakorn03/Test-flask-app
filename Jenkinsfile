@@ -116,9 +116,7 @@ pipeline {
                     sh deployCmd
                 }
             }
-            post {
-                echo  "Deployment completed."
-            }
+            
         }
 
         // Rollback เมื่อเลือก ACTION = Rollback
@@ -144,9 +142,7 @@ pipeline {
                     """
                 }
             }
-            post {
-                echo  "Rollback completed."
-            }
+            
         }
     }
 
