@@ -128,3 +128,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Jenkins
+jenkins-docker/jenkins_home/
+jenkins_home/

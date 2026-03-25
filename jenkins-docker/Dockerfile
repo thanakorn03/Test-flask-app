@@ -1,0 +1,31 @@
+# Custom Jenkins with Docker CLI and Python
+FROM jenkins/jenkins:jdk21
+
+USER root
+
+# Install Docker CLI, Python, and other dependencies
+RUN apt-get update && \
+    apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && \
+    apt-get install -y docker-ce-cli python3 python3-pip python3-venv && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create entrypoint script to fix docker socket permissions at runtime
+RUN echo '#!/bin/bash\n\
+DOCKER_SOCK="/var/run/docker.sock"\n\
+if [ -S "$DOCKER_SOCK" ]; then\n\
+    DOCKER_GID=$(stat -c "%g" $DOCKER_SOCK)\n\
+    if ! getent group $DOCKER_GID > /dev/null 2>&1; then\n\
+        groupadd -g $DOCKER_GID docker\n\
+    fi\n\
+    usermod -aG $DOCKER_GID jenkins\n\
+fi\n\
+exec /usr/bin/tini -- /usr/local/bin/jenkins.sh "$@"' > /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
+
+USER jenkins
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
