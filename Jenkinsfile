@@ -70,15 +70,20 @@ pipeline {
                     def imageTag = (env.BRANCH_NAME == 'main') ? sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim() : "dev-${env.BUILD_NUMBER}"
                     env.IMAGE_TAG = imageTag
 
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS_ID) {
-                        echo "Building image: ${DOCKER_REPO}:${env.IMAGE_TAG}"
-                        def customImage = docker.build("${DOCKER_REPO}:${env.IMAGE_TAG}")
+                    echo "Building image: ${DOCKER_REPO}:${env.IMAGE_TAG}"
+                    sh "docker build -t ${DOCKER_REPO}:${env.IMAGE_TAG} -t ${DOCKER_REPO}:latest ."
+
+                    withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        echo "Logging into Docker Hub..."
+                        sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
 
                         echo "Pushing images to Docker Hub..."
-                        customImage.push()
+                        sh "docker push ${DOCKER_REPO}:${env.IMAGE_TAG}"
                         if (env.BRANCH_NAME == 'main') {
-                            customImage.push('latest')
+                            sh "docker push ${DOCKER_REPO}:latest"
                         }
+
+                        sh 'docker logout'
                     }
                 }
             }
