@@ -89,11 +89,11 @@ pipeline {
             }
         }
 
-        // Deploy to DEV (Local Docker) — สำหรับ branch develop
+        // Deploy to DEV (Local Docker) — สำหรับ branch main (จำลอง DEV)
         stage('Deploy to DEV (Local Docker)') {
             when {
                 expression { params.ACTION == 'Build & Deploy' }
-                branch 'develop'
+                branch 'main'
             }
             steps {
                 script {
